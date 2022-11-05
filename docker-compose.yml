@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=cvm
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+      - "/home/irvind/dev/golang/chess_server:/tmp/sql"
+    ports:
+      - "9090:5432"
+volumes:
+  dbdata:

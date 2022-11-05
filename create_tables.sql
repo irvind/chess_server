@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS games;
+
+CREATE TABLE games (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP
+);
