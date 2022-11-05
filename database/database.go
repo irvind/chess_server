@@ -37,3 +37,7 @@ func ConnectToDatabase() {
 
 	fmt.Println("Connected to database")
 }
+
+func GetDB() *sql.DB {
+	return db
+}
