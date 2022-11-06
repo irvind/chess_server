@@ -12,6 +12,7 @@ func RunApi() {
 	router.POST("/games/:id/players", postGamePlayers)
 	router.GET("/games/:id/moves", getGameMoves)
 	router.POST("/games/:id/moves", postGameMoves)
+	router.POST("/players", postPlayers)
 
 	router.Run("localhost:8080")
 }
