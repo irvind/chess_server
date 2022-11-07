@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS players;
 
 CREATE TABLE players (
     id bigserial PRIMARY KEY,
-    name varchar(255) NOT NULL,
-    auth_secret varchar(255) NOT NULL,
+    name varchar(64) NOT NULL,
+    auth_secret varchar(64) NOT NULL,
     created_at timestamp NOT NULL
 );
 
