@@ -1,16 +1,23 @@
 package dao
 
-import "github.com/irvind/chess_server/database"
+import (
+	"time"
+	"github.com/irvind/chess_server/database"
+)
 
 type Game struct {
-	ID int64
+	ID				int64			`json:"id"`
+	CreatedBy		int64			`json:"createdBy"`
+	Opponent		JsonNullInt64	`json:"opponent"`
+	CreatorWhite	JsonNullBool	`json:"creatorIsWhite"`
+	CreatedAt		time.Time		`json:"createdAt"`
 }
 
 func GetGames() ([]Game, error) {
 	var games []Game
 	db := database.GetDB()
 
-	rows, err := db.Query("SELECT id FROM games")
+	rows, err := db.Query("SELECT id, created_by, opponent, creator_white, created_at FROM games")
 	if err != nil {
 		return nil, err
 	}
@@ -18,13 +25,20 @@ func GetGames() ([]Game, error) {
 
 	for rows.Next() {
 		var game Game
-		if err := rows.Scan(&game.ID); err != nil {
+		err = rows.Scan(
+			&game.ID,
+			&game.CreatedBy,
+			&game.Opponent,
+			&game.CreatorWhite,
+			&game.CreatedAt,
+		)
+		if err != nil {
 			return nil, err
 		}
 		games = append(games, game)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
