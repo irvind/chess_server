@@ -31,3 +31,21 @@ func CreatePlayer(name string, authSecret string) (*Player, error) {
 
 	return player, nil
 }
+
+func GetPlayerByAuthSecret(authSecret string) (*Player, error) {
+	// TODO: remove code dupliation
+	db := database.GetDB()
+	row := db.QueryRow("SELECT id, name, auth_secret, created_at FROM players WHERE auth_secret = $1", authSecret)
+	var player Player
+	err := row.Scan(
+		&player.ID,
+		&player.Name,
+		&player.AuthSecret,
+		&player.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &player, nil
+}

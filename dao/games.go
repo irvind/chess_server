@@ -45,9 +45,12 @@ func GetGames() ([]Game, error) {
 	return games, nil
 }
 
-func CreateGame() (int64, error) {
+func CreateGame(createdBy int64) (int64, error) {
 	db := database.GetDB()
-	row := db.QueryRow("INSERT INTO games (created_at) VALUES (NOW()) RETURNING id")
+	row := db.QueryRow(
+		"INSERT INTO games (created_by, created_at) VALUES ($1, NOW()) RETURNING id",
+		createdBy,
+	)
 
 	var newId int64 = 0
 	if err := row.Scan(&newId); err != nil {
