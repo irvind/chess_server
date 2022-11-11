@@ -18,7 +18,7 @@ func getGames(c *gin.Context) {
 
 func postGames(c *gin.Context) {
 	// TODO: get CreatorWhite field from JSON
-	headers, ok = c.Request.Header["Auth-Token"]
+	headers, ok := c.Request.Header["Auth-Token"]
 	if !ok || len(headers) != 1 {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Auth token is required"})
 		return
@@ -28,6 +28,10 @@ func postGames(c *gin.Context) {
 	player, err := dao.GetPlayerByAuthSecret(authToken)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	if player == nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Player was not found"})
 		return
 	}
 

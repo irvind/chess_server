@@ -2,6 +2,7 @@ package dao
 
 import (
 	"time"
+	"database/sql"
 	"github.com/irvind/chess_server/database"
 )
 
@@ -43,6 +44,9 @@ func GetPlayerByAuthSecret(authSecret string) (*Player, error) {
 		&player.AuthSecret,
 		&player.CreatedAt,
 	)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
