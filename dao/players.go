@@ -6,10 +6,10 @@ import (
 )
 
 type Player struct {
-	ID int64
-	Name string
-	AuthSecret string
-	CreatedAt time.Time
+	ID			int64		`json:"id"`
+	Name		string		`json:"name"`
+	AuthSecret	string		`json:"authSecret"`
+	CreatedAt	time.Time	`json:"createdAt"`
 }
 
 func CreatePlayer(name string, authSecret string) (*Player, error) {
