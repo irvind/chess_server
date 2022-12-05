@@ -65,9 +65,9 @@ func (board *Board) PrintPosition(position Position) {
 	if figure == nil {
 		fmt.Printf("%c%d: empty position\n", position.X, position.Y)
 	} else {
-		fmt.Printf("%c%d: side - %c, figure - %c\n", position.X, position.Y, figure.Side, figure.FigureType) 
+		fmt.Printf("%c%d: side - %c, figure - %c\n", position.X, position.Y, figure.Side, figure.FigureType)
 	}
-} 
+}
 
 // TODO: print board
 

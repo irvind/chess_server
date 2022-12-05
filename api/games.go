@@ -2,9 +2,16 @@ package api
 
 import (
 	"net/http"
+	"strconv"
+
+	// "database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/irvind/chess_server/dao"
 )
+
+// type PostGamesParams struct {
+// 	CreatorWhite sql.NullBool `json:"creatorIsWhite" binding:"required"`
+// }
 
 func getGames(c *gin.Context) {
 	games, err := dao.GetGames()
@@ -41,7 +48,23 @@ func postGames(c *gin.Context) {
 }
 
 func getGameById(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "getGameById"})
+	gameID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "id param is invalid"})
+		return
+	}
+	game, err := dao.GetGame(gameID)
+
+	if game == nil && err == nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game was not found"})
+		return
+	}
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, game)
 }
 
 func getGamePlayers(c *gin.Context) {

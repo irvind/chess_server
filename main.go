@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/irvind/chess_server/api"
 	"github.com/irvind/chess_server/chess"
 	"github.com/irvind/chess_server/database"
-	"github.com/irvind/chess_server/api"
 )
 
 func pointerTest() {
@@ -15,7 +16,7 @@ func pointerTest() {
 	*p = 100
 	fmt.Println(*p)
 	fmt.Println(i)
-	
+
 	p = &j
 	*p = *p / 37
 	fmt.Println(*p)
