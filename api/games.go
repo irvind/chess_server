@@ -52,7 +52,12 @@ func getGameById(c *gin.Context, game *dao.Game) {
 }
 
 func getGamePlayers(c *gin.Context, game *dao.Game) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "getGamePlayers"})
+	gamePlayers, err := dao.GetPlayersByGameId(int(game.ID))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gamePlayers)
 }
 
 func postGamePlayers(c *gin.Context, game *dao.Game) {

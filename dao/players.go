@@ -1,16 +1,28 @@
 package dao
 
 import (
-	"time"
 	"database/sql"
+	"errors"
+	"time"
+
 	"github.com/irvind/chess_server/database"
 )
 
 type Player struct {
-	ID			int64		`json:"id"`
-	Name		string		`json:"name"`
-	AuthSecret	string		`json:"authSecret"`
-	CreatedAt	time.Time	`json:"createdAt"`
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	AuthSecret string    `json:"authSecret"`
+	CreatedAt  time.Time `json:"createdAt"`
+}
+
+type PlayerQueryItem struct {
+	Player
+	initiator bool
+}
+
+type GamePlayers struct {
+	Creator  *Player `json:"creator"`
+	Opponent *Player `json:"opponent"`
 }
 
 func CreatePlayer(name string, authSecret string) (*Player, error) {
@@ -52,4 +64,64 @@ func GetPlayerByAuthSecret(authSecret string) (*Player, error) {
 	}
 
 	return &player, nil
+}
+
+func GetPlayersByGameId(gameId int) (GamePlayers, error) {
+	db := database.GetDB()
+	query :=
+		"SELECT *, TRUE AS initiator FROM players WHERE id = (SELECT created_by FROM games WHERE id = $1) " +
+			"union SELECT *, FALSE AS initiator FROM players WHERE id = (SELECT opponent FROM games WHERE id = $1)"
+
+	rows, err := db.Query(query, gameId)
+	if err != nil {
+		return GamePlayers{}, err
+	}
+	defer rows.Close()
+
+	var dbPlayers []PlayerQueryItem
+	for rows.Next() {
+		var item PlayerQueryItem
+
+		err = rows.Scan(
+			&item.Player.ID,
+			&item.Player.Name,
+			&item.Player.AuthSecret,
+			&item.Player.CreatedAt,
+			&item.initiator,
+		)
+		if err != nil {
+			return GamePlayers{}, err
+		}
+		dbPlayers = append(dbPlayers, item)
+	}
+
+	if len(dbPlayers) == 0 || len(dbPlayers) > 2 {
+		return GamePlayers{nil, nil}, errors.New("Invalid player count")
+	} else if len(dbPlayers) == 1 {
+		player := dbPlayerToPlayer(&dbPlayers[0])
+		return GamePlayers{Creator: player}, nil
+	} else if len(dbPlayers) == 2 {
+		var initiatorIdx, opponentIdx int
+		if dbPlayers[0].initiator {
+			initiatorIdx, opponentIdx = 0, 1
+		} else {
+			initiatorIdx, opponentIdx = 1, 0
+		}
+
+		return GamePlayers{
+			Creator:  dbPlayerToPlayer(&dbPlayers[initiatorIdx]),
+			Opponent: dbPlayerToPlayer(&dbPlayers[opponentIdx]),
+		}, nil
+	}
+
+	return GamePlayers{nil, nil}, nil
+}
+
+func dbPlayerToPlayer(dbPlayer *PlayerQueryItem) *Player {
+	return &Player{
+		ID:         dbPlayer.ID,
+		Name:       dbPlayer.Name,
+		AuthSecret: dbPlayer.AuthSecret,
+		CreatedAt:  dbPlayer.CreatedAt,
+	}
 }
