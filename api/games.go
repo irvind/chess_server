@@ -47,38 +47,44 @@ func postGames(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"id": newGameID})
 }
 
-func getGameById(c *gin.Context) {
-	gameID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "id param is invalid"})
-		return
-	}
-	game, err := dao.GetGame(gameID)
-
-	if game == nil && err == nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game was not found"})
-		return
-	}
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-		return
-	}
-
+func getGameById(c *gin.Context, game *dao.Game) {
 	c.IndentedJSON(http.StatusOK, game)
 }
 
-func getGamePlayers(c *gin.Context) {
+func getGamePlayers(c *gin.Context, game *dao.Game) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "getGamePlayers"})
 }
 
-func postGamePlayers(c *gin.Context) {
+func postGamePlayers(c *gin.Context, game *dao.Game) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "postGamePlayers"})
 }
 
-func getGameMoves(c *gin.Context) {
+func getGameMoves(c *gin.Context, game *dao.Game) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "getGameMoves"})
 }
 
-func postGameMoves(c *gin.Context) {
+func postGameMoves(c *gin.Context, game *dao.Game) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "postGameMoves"})
+}
+
+func makeGameIdHandler(fn func(*gin.Context, *dao.Game)) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gameID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "id param is invalid"})
+			return
+		}
+		game, err := dao.GetGame(gameID)
+
+		if game == nil && err == nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game was not found"})
+			return
+		}
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		fn(c, game)
+	}
 }
