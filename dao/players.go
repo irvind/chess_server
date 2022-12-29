@@ -100,21 +100,21 @@ func GetPlayersByGameId(gameId int) (GamePlayers, error) {
 	} else if len(dbPlayers) == 1 {
 		player := dbPlayerToPlayer(&dbPlayers[0])
 		return GamePlayers{Creator: player}, nil
-	} else if len(dbPlayers) == 2 {
-		var initiatorIdx, opponentIdx int
-		if dbPlayers[0].initiator {
-			initiatorIdx, opponentIdx = 0, 1
-		} else {
-			initiatorIdx, opponentIdx = 1, 0
-		}
-
-		return GamePlayers{
-			Creator:  dbPlayerToPlayer(&dbPlayers[initiatorIdx]),
-			Opponent: dbPlayerToPlayer(&dbPlayers[opponentIdx]),
-		}, nil
 	}
 
-	return GamePlayers{nil, nil}, nil
+	// len(dbPlayers) == 2
+	var initiatorIdx, opponentIdx int
+	if dbPlayers[0].initiator {
+		initiatorIdx, opponentIdx = 0, 1
+	} else {
+		initiatorIdx, opponentIdx = 1, 0
+	}
+
+	return GamePlayers{
+		Creator:  dbPlayerToPlayer(&dbPlayers[initiatorIdx]),
+		Opponent: dbPlayerToPlayer(&dbPlayers[opponentIdx]),
+	}, nil
+
 }
 
 func dbPlayerToPlayer(dbPlayer *PlayerQueryItem) *Player {
