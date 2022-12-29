@@ -2,10 +2,10 @@ package api
 
 import (
 	"net/http"
-	"github.com/gin-gonic/gin"
 
-	"github.com/irvind/chess_server/dao"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/irvind/chess_server/dao"
 )
 
 type PostPlayersParams struct {
@@ -28,4 +28,26 @@ func postPlayers(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newPlayer)
+}
+
+func requireAuthToken(c *gin.Context, context Context) bool {
+	headers, ok := c.Request.Header["Auth-Token"]
+	if !ok || len(headers) != 1 {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Auth token is required"})
+		return false
+	}
+
+	authToken := headers[0]
+	player, err := dao.GetPlayerByAuthSecret(authToken)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return false
+	}
+	if player == nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Player was not found"})
+		return false
+	}
+
+	context["player"] = player
+	return true
 }
