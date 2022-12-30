@@ -49,9 +49,26 @@ func getGamePlayers(c *gin.Context, context Context) {
 	c.IndentedJSON(http.StatusOK, gamePlayers)
 }
 
-func postGamePlayers(c *gin.Context, context Context) {
-	// TODO
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "postGamePlayers"})
+func postGamePlayersJoin(c *gin.Context, context Context) {
+	game := context["game"].(*dao.Game)
+	if game.OpponentIsJoined() {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Opponent is already joined"})
+		return
+	}
+
+	player := context["player"].(*dao.Player)
+	if game.CreatedBy == player.ID {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Cannot join the game"})
+		return
+	}
+
+	err := dao.AddPlayerToGame(int(game.ID), int(player.ID))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func getGameMoves(c *gin.Context, context Context) {

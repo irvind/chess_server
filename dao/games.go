@@ -15,9 +15,9 @@ type Game struct {
 	CreatedAt    time.Time     `json:"createdAt"`
 }
 
-// TODO: refactor code repetition
-// func scanGame(game *Game) error {
-// }
+func (game *Game) OpponentIsJoined() bool {
+	return game.Opponent.Valid
+}
 
 func GetGames() ([]Game, error) {
 	var games []Game
@@ -93,4 +93,14 @@ func CreateGame(createdBy int64) (int64, error) {
 	}
 
 	return newId, nil
+}
+
+func AddPlayerToGame(gameID int, playerID int) error {
+	db := database.GetDB()
+	_, err := db.Exec("UPDATE games SET opponent = $1 WHERE id = $2", playerID, gameID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
