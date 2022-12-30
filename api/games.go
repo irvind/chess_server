@@ -20,6 +20,7 @@ func getGames(c *gin.Context) {
 		return
 	}
 
+	// TODO: return empty list intead of null
 	c.IndentedJSON(http.StatusOK, games)
 }
 
@@ -72,8 +73,15 @@ func postGamePlayersJoin(c *gin.Context, context Context) {
 }
 
 func getGameMoves(c *gin.Context, context Context) {
-	// TODO
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "getGameMoves"})
+	game := context["game"].(*dao.Game)
+	moves, err := dao.GetGameMoves(int(game.ID))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	// TODO: return empty list intead of null
+	c.IndentedJSON(http.StatusOK, moves)
 }
 
 func postGameMoves(c *gin.Context, context Context) {
