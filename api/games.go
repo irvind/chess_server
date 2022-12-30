@@ -13,6 +13,10 @@ import (
 // 	CreatorWhite sql.NullBool `json:"creatorIsWhite" binding:"required"`
 // }
 
+type PostGameMovesParams struct {
+	Move string `json:"move" binding:"required,max=8"`
+}
+
 func getGames(c *gin.Context) {
 	games, err := dao.GetGames()
 	if err != nil {
@@ -85,8 +89,57 @@ func getGameMoves(c *gin.Context, context Context) {
 }
 
 func postGameMoves(c *gin.Context, context Context) {
-	// TODO
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "postGameMoves"})
+	game := context["game"].(*dao.Game)
+	// TODO: check game status
+
+	var params PostGameMovesParams
+	if err := c.BindJSON(&params); err != nil {
+		// TODO: return error resp
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	moves, err := dao.GetGameMoves(int(game.ID))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	player := context["player"].(*dao.Player)
+	isWhiteMove := len(moves)%2 == 0
+
+	var validPlayerID int64
+	if !game.CreatorWhite.Valid || !game.Opponent.Valid {
+		// TODO: add informative error message
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	if (game.CreatorWhite.Bool && isWhiteMove) || (!game.CreatorWhite.Bool && !isWhiteMove) {
+		validPlayerID = game.CreatedBy
+	} else {
+		validPlayerID = game.Opponent.Int64
+	}
+	if validPlayerID != player.ID {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "It's not your turn"})
+		return
+	}
+
+	// TODO: check if move is valid
+
+	var moveIndex int
+	if moves != nil {
+		moveIndex = moves[len(moves)-1].Index + 1
+	} else {
+		moveIndex = 0
+	}
+	newMoveID, err := dao.AddMoveToGame(int(game.ID), params.Move, moveIndex)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"id": newMoveID})
 }
 
 func requireGameID(c *gin.Context, context Context) bool {

@@ -43,3 +43,21 @@ func GetGameMoves(gameID int) ([]Move, error) {
 
 	return moves, nil
 }
+
+func AddMoveToGame(gameID int, move string, index int) (int64, error) {
+	db := database.GetDB()
+
+	row := db.QueryRow(
+		"INSERT INTO moves(game_id, idx, description, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id",
+		gameID,
+		index,
+		move,
+	)
+
+	var newId int64 = 0
+	if err := row.Scan(&newId); err != nil {
+		return 0, err
+	}
+
+	return newId, nil
+}
