@@ -26,7 +26,6 @@ type GamePlayers struct {
 }
 
 func CreatePlayer(name string, authSecret string) (*Player, error) {
-	// TODO: remove code dupliation
 	db := database.GetDB()
 	row := db.QueryRow(
 		"INSERT INTO players (name, auth_secret, created_at) VALUES ($1, $2, NOW()) RETURNING id, created_at",
@@ -46,7 +45,6 @@ func CreatePlayer(name string, authSecret string) (*Player, error) {
 }
 
 func GetPlayerByAuthSecret(authSecret string) (*Player, error) {
-	// TODO: remove code dupliation
 	db := database.GetDB()
 	row := db.QueryRow("SELECT id, name, auth_secret, created_at FROM players WHERE auth_secret = $1", authSecret)
 	var player Player
