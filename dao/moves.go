@@ -6,6 +6,7 @@ import (
 	"github.com/irvind/chess_server/database"
 )
 
+// Move holds move table row from the database
 type Move struct {
 	ID        int64     `json:"id"`
 	Index     int       `json:"index"`
@@ -13,6 +14,7 @@ type Move struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+// GetGameMoves retrieves all game moves from the database
 func GetGameMoves(gameID int) ([]Move, error) {
 	db := database.GetDB()
 
@@ -44,6 +46,7 @@ func GetGameMoves(gameID int) ([]Move, error) {
 	return moves, nil
 }
 
+// AddMoveToGame adds new move to existing game by game id
 func AddMoveToGame(gameID int, move string, index int) (int64, error) {
 	db := database.GetDB()
 

@@ -7,7 +7,7 @@ import (
 	"github.com/irvind/chess_server/database"
 )
 
-// Game is data structure representing game row from the database
+// Game holds game table row from the database
 type Game struct {
 	ID           int64         `json:"id"`
 	CreatedBy    int64         `json:"createdBy"`
