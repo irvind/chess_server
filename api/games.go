@@ -100,6 +100,14 @@ func postGameMoves(c *gin.Context, context Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Game is already finished"})
 		return
 	}
+	if !game.CreatorWhite.Valid {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Game initiator color is not set"})
+		return
+	}
+	if !game.Opponent.Valid {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Opponent is not joined"})
+		return
+	}
 
 	var params PostGameMovesParams
 	if err := c.BindJSON(&params); err != nil {
@@ -114,16 +122,9 @@ func postGameMoves(c *gin.Context, context Context) {
 		return
 	}
 
+	var validPlayerID int64
 	player := context["player"].(*dao.Player)
 	isWhiteMove := len(moves)%2 == 0
-
-	var validPlayerID int64
-	if !game.CreatorWhite.Valid || !game.Opponent.Valid {
-		// TODO: add informative error message
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-		return
-	}
-
 	if (game.CreatorWhite.Bool && isWhiteMove) || (!game.CreatorWhite.Bool && !isWhiteMove) {
 		validPlayerID = game.CreatedBy
 	} else {
