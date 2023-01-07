@@ -24,7 +24,10 @@ func getGames(c *gin.Context) {
 		return
 	}
 
-	// TODO: return empty list intead of null
+	if games == nil {
+		c.IndentedJSON(http.StatusOK, []dao.Game{})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, games)
 }
 
@@ -84,7 +87,10 @@ func getGameMoves(c *gin.Context, context Context) {
 		return
 	}
 
-	// TODO: return empty list intead of null
+	if moves == nil {
+		c.IndentedJSON(http.StatusOK, []dao.Move{})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, moves)
 }
 
