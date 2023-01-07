@@ -96,7 +96,10 @@ func getGameMoves(c *gin.Context, context Context) {
 
 func postGameMoves(c *gin.Context, context Context) {
 	game := context["game"].(*dao.Game)
-	// TODO: check game status
+	if game.Finished {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Game is already finished"})
+		return
+	}
 
 	var params PostGameMovesParams
 	if err := c.BindJSON(&params); err != nil {
