@@ -14,7 +14,8 @@ CREATE TABLE games (
     created_by bigint NOT NULL REFERENCES players,
     opponent bigint,
     creator_white boolean,
-    created_at timestamp NOT NULL
+    created_at timestamp NOT NULL,
+    finished boolean DEFAULT false
 );
 
 CREATE TABLE moves (
