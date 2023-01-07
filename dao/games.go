@@ -7,6 +7,7 @@ import (
 	"github.com/irvind/chess_server/database"
 )
 
+// Game is data structure representing game row from the database
 type Game struct {
 	ID           int64         `json:"id"`
 	CreatedBy    int64         `json:"createdBy"`
@@ -15,10 +16,12 @@ type Game struct {
 	CreatedAt    time.Time     `json:"createdAt"`
 }
 
+// OpponentIsJoined returns true if oppenent joined to the game
 func (game *Game) OpponentIsJoined() bool {
 	return game.Opponent.Valid
 }
 
+// GetGames retrieves all game objects from the database
 func GetGames() ([]Game, error) {
 	var games []Game
 	db := database.GetDB()
@@ -51,6 +54,7 @@ func GetGames() ([]Game, error) {
 	return games, nil
 }
 
+// GetGame retrieves game object by id from the database
 func GetGame(id int) (*Game, error) {
 	var game Game
 	db := database.GetDB()
@@ -80,6 +84,7 @@ func GetGame(id int) (*Game, error) {
 	return &game, nil
 }
 
+// CreateGame creates new game object in the database
 func CreateGame(createdBy int64) (int64, error) {
 	db := database.GetDB()
 	row := db.QueryRow(
@@ -95,6 +100,7 @@ func CreateGame(createdBy int64) (int64, error) {
 	return newId, nil
 }
 
+// AddPlayerToGame joins opponent playerID to a game row in the database
 func AddPlayerToGame(gameID int, playerID int) error {
 	db := database.GetDB()
 	_, err := db.Exec("UPDATE games SET opponent = $1 WHERE id = $2", playerID, gameID)
