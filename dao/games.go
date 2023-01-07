@@ -14,6 +14,7 @@ type Game struct {
 	Opponent     JsonNullInt64 `json:"opponent"`
 	CreatorWhite JsonNullBool  `json:"creatorIsWhite"`
 	CreatedAt    time.Time     `json:"createdAt"`
+	Finished     bool          `json:"finished"`
 }
 
 // OpponentIsJoined returns true if oppenent joined to the game
@@ -26,7 +27,7 @@ func GetGames() ([]Game, error) {
 	var games []Game
 	db := database.GetDB()
 
-	rows, err := db.Query("SELECT id, created_by, opponent, creator_white, created_at FROM games")
+	rows, err := db.Query("SELECT id, created_by, opponent, creator_white, created_at, finished FROM games")
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +41,7 @@ func GetGames() ([]Game, error) {
 			&game.Opponent,
 			&game.CreatorWhite,
 			&game.CreatedAt,
+			&game.Finished,
 		)
 		if err != nil {
 			return nil, err
@@ -60,7 +62,7 @@ func GetGame(id int) (*Game, error) {
 	db := database.GetDB()
 
 	row := db.QueryRow(
-		"SELECT id, created_by, opponent, creator_white, created_at "+
+		"SELECT id, created_by, opponent, creator_white, created_at, finished "+
 			"FROM games "+
 			"WHERE id = $1",
 		id,
@@ -72,6 +74,7 @@ func GetGame(id int) (*Game, error) {
 		&game.Opponent,
 		&game.CreatorWhite,
 		&game.CreatedAt,
+		&game.Finished,
 	)
 
 	if err == sql.ErrNoRows {
