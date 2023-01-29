@@ -1,6 +1,8 @@
 package chess
 
-import "errors"
+import (
+	"fmt"
+)
 
 type Position struct {
 	X byte
@@ -49,4 +51,38 @@ func NewMove(startX, startY, endX, endY byte, figureTaken byte, castling bool) (
 		Castling:    castling,
 	}
 	return &move, nil
+}
+
+func MakeMoveFromStr(str string) (*Move, error) {
+	if len(str) < 4 {
+		return nil, ErrInvalidStrMove
+	}
+
+	var startY byte
+	_, err := fmt.Sscanf(str[1:2], "%d", &startY)
+	if err != nil {
+		return nil, ErrInvalidStrMove
+	}
+
+	var endY byte
+	_, err = fmt.Sscanf(str[3:4], "%d", &endY)
+	if err != nil {
+		return nil, ErrInvalidStrMove
+	}
+
+	var takenFigure byte = 0
+	var castling bool = false
+	if len(str) == 5 {
+		if str[4] == 'c' {
+			castling = true
+		} else {
+			takenFigure = str[4]
+		}
+	}
+	move, err := NewMove(str[0], startY, str[2], endY, takenFigure, castling)
+	if err != nil {
+		return nil, err
+	}
+
+	return move, nil
 }
