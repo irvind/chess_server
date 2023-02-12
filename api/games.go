@@ -135,6 +135,7 @@ func postGameMoves(c *gin.Context, context Context) {
 		return
 	}
 
+	// TODO: reconstruct board
 	// TODO: check if move is valid
 
 	var moveIndex int

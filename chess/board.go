@@ -13,18 +13,22 @@ func NewBoard() *Board {
 	board := new(Board)
 
 	board.Positions[7][0] = &Figure{'w', 'r'}
+	// TODO: rename k to n
 	board.Positions[7][1] = &Figure{'w', 'k'}
 	board.Positions[7][2] = &Figure{'w', 'b'}
 	board.Positions[7][3] = &Figure{'w', 'q'}
+	// TODO: rename g to k
 	board.Positions[7][4] = &Figure{'w', 'g'}
 	board.Positions[7][5] = &Figure{'w', 'b'}
 	board.Positions[7][6] = &Figure{'w', 'k'}
 	board.Positions[7][7] = &Figure{'w', 'r'}
 
 	board.Positions[0][0] = &Figure{'b', 'r'}
+	// TODO: rename k to n
 	board.Positions[0][1] = &Figure{'b', 'k'}
 	board.Positions[0][2] = &Figure{'b', 'b'}
 	board.Positions[0][3] = &Figure{'b', 'q'}
+	// TODO: rename g to k
 	board.Positions[0][4] = &Figure{'b', 'g'}
 	board.Positions[0][5] = &Figure{'b', 'b'}
 	board.Positions[0][6] = &Figure{'b', 'k'}
@@ -46,6 +50,7 @@ func (board *Board) MoveFigure(move Move) error {
 
 	// TODO: check by figure
 
+	// TODO: allow to eat enemy figure
 	secondPos1, secondPos2 := positionToBoardIdx(move.Second)
 	if board.Positions[secondPos1][secondPos2] != nil {
 		return errors.New("end position is not empty")

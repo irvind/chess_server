@@ -1,15 +1,16 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
-	"database/sql"
+
 	_ "github.com/lib/pq"
 
 	"github.com/irvind/chess_server/utils"
-
 )
 
+// TODO: use connection pool
 var db *sql.DB
 
 func ConnectToDatabase() {
@@ -25,7 +26,7 @@ func ConnectToDatabase() {
 			utils.GetenvOrDefault("DBPASSWORD", "chess"),
 		),
 	)
-		
+
 	if err != nil {
 		log.Fatal(err)
 	}
