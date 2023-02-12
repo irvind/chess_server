@@ -20,7 +20,7 @@ type PostGameMovesParams struct {
 func getGames(c *gin.Context) {
 	games, err := dao.GetGames()
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -35,7 +35,7 @@ func postGames(c *gin.Context, context Context) {
 	player := context["player"].(*dao.Player)
 	newGameID, err := dao.CreateGame(player.ID)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -51,7 +51,7 @@ func getGamePlayers(c *gin.Context, context Context) {
 	game := context["game"].(*dao.Game)
 	gamePlayers, err := dao.GetPlayersByGameId(int(game.ID))
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, gamePlayers)
@@ -60,19 +60,19 @@ func getGamePlayers(c *gin.Context, context Context) {
 func postGamePlayersJoin(c *gin.Context, context Context) {
 	game := context["game"].(*dao.Game)
 	if game.OpponentIsJoined() {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Opponent is already joined"})
+		JSONBadRequestError(c, "Opponent is already joined")
 		return
 	}
 
 	player := context["player"].(*dao.Player)
 	if game.CreatedBy == player.ID {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Cannot join the game"})
+		JSONBadRequestError(c, "Cannot join the game")
 		return
 	}
 
 	err := dao.AddPlayerToGame(int(game.ID), int(player.ID))
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -83,7 +83,7 @@ func getGameMoves(c *gin.Context, context Context) {
 	game := context["game"].(*dao.Game)
 	moves, err := dao.GetGameMoves(int(game.ID))
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -95,20 +95,6 @@ func getGameMoves(c *gin.Context, context Context) {
 }
 
 func postGameMoves(c *gin.Context, context Context) {
-	game := context["game"].(*dao.Game)
-	if game.Finished {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Game is already finished"})
-		return
-	}
-	if !game.CreatorWhite.Valid {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Game initiator color is not set"})
-		return
-	}
-	if !game.Opponent.Valid {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Opponent is not joined"})
-		return
-	}
-
 	var params PostGameMovesParams
 	if err := c.BindJSON(&params); err != nil {
 		// TODO: return error resp
@@ -116,9 +102,23 @@ func postGameMoves(c *gin.Context, context Context) {
 		return
 	}
 
+	game := context["game"].(*dao.Game)
+	if game.Finished {
+		JSONBadRequestError(c, "Game is already finished")
+		return
+	}
+	if !game.CreatorWhite.Valid {
+		JSONBadRequestError(c, "Game initiator color is not set")
+		return
+	}
+	if !game.Opponent.Valid {
+		JSONBadRequestError(c, "Opponent is not joined")
+		return
+	}
+
 	moves, err := dao.GetGameMoves(int(game.ID))
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -131,7 +131,7 @@ func postGameMoves(c *gin.Context, context Context) {
 		validPlayerID = game.Opponent.Int64
 	}
 	if validPlayerID != player.ID {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "It's not your turn"})
+		JSONBadRequestError(c, "It's not your turn")
 		return
 	}
 
@@ -145,7 +145,7 @@ func postGameMoves(c *gin.Context, context Context) {
 	}
 	newMoveID, err := dao.AddMoveToGame(int(game.ID), params.Move, moveIndex)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return
 	}
 
@@ -155,17 +155,17 @@ func postGameMoves(c *gin.Context, context Context) {
 func requireGameID(c *gin.Context, context Context) bool {
 	gameID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "id param is invalid"})
+		JSONBadRequestError(c, "id param is invalid")
 		return false
 	}
 
 	game, err := dao.GetGame(gameID)
 	if game == nil && err == nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game was not found"})
+		JSONNotFoundError(c, "Game was not found")
 		return false
 	}
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		JSONIntervalServerError(c)
 		return false
 	}
 

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,4 +37,16 @@ func makeHandler(fn ApiHandlerFunc, contextFns []ContextFunc) gin.HandlerFunc {
 		}
 		fn(c, context)
 	}
+}
+
+func JSONIntervalServerError(c *gin.Context) {
+	c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+}
+
+func JSONBadRequestError(c *gin.Context, errorMessage string) {
+	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": errorMessage})
+}
+
+func JSONNotFoundError(c *gin.Context, errorMessage string) {
+	c.IndentedJSON(http.StatusNotFound, gin.H{"error": errorMessage})
 }
