@@ -7,6 +7,8 @@ import (
 
 type Board struct {
 	Positions [8][8]*Figure
+
+	MoveFigureFx func(Move) error
 }
 
 func NewBoard() *Board {
@@ -35,10 +37,32 @@ func NewBoard() *Board {
 		board.Positions[6][i] = &Figure{'w', 'p'}
 	}
 
+	board.Init()
+
 	return board
 }
 
+func (board *Board) Init() {
+	board.MoveFigureFx = board.moveFigure
+}
+
+func (board *Board) ApplyStrMoves(strMoves []string) error {
+	for _, strMove := range strMoves {
+		move, err := MakeMoveFromStr(strMove)
+		if err != nil {
+			return err
+		}
+		board.MoveFigure(*move)
+	}
+
+	return nil
+}
+
 func (board *Board) MoveFigure(move Move) error {
+	return board.MoveFigureFx(move)
+}
+
+func (board *Board) moveFigure(move Move) error {
 	firstPos1, firstPos2 := positionToBoardIdx(move.First)
 	if board.Positions[firstPos1][firstPos2] == nil {
 		return errors.New("start position is empty")
