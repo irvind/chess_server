@@ -62,27 +62,61 @@ func (board *Board) MoveFigure(move Move) error {
 	return board.MoveFigureFx(move)
 }
 
+func (board *Board) getFigureByPosition(position Position) (*Figure, error) {
+	// TODO: check for errors
+	xCoord, yCoord := positionToBoardIdx(position)
+	return board.Positions[xCoord][yCoord], nil
+}
+
 func (board *Board) moveFigure(move Move) error {
 	firstPos1, firstPos2 := positionToBoardIdx(move.First)
-	if board.Positions[firstPos1][firstPos2] == nil {
+	figure := board.Positions[firstPos1][firstPos2]
+	if figure == nil {
 		return errors.New("start position is empty")
 	}
 
-	// TODO: check by figure
-
-	// TODO: allow to eat enemy figure
-	secondPos1, secondPos2 := positionToBoardIdx(move.Second)
-	if board.Positions[secondPos1][secondPos2] != nil {
-		return errors.New("end position is not empty")
+	var err error
+	switch figure.FigureType {
+	case 'p':
+		err = board.movePawn(move)
+	case 'r':
+		// TODO
+	case 'k':
+		// TODO
+	case 'b':
+		// TODO
+	case 'q':
+		// TODO
+	case 'g':
+		// TODO
+	default:
+		err = errors.New("unknown figure")
 	}
 
-	board.Positions[secondPos1][secondPos2] = board.Positions[firstPos1][firstPos2]
-	board.Positions[firstPos1][firstPos2] = nil
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-// TODO: take figure method
+func (board *Board) movePawn(move Move) error {
+	firstPosX, firstPosY := positionToBoardIdx(move.First)
+	secondPosX, secondPosY := positionToBoardIdx(move.Second)
+
+	canMove, err := CanMovePawn(board, move)
+	if err != nil {
+		return err
+	}
+	if !canMove {
+		return ErrInvalidMove
+	}
+
+	board.Positions[secondPosX][secondPosY] = board.Positions[firstPosX][firstPosY]
+	board.Positions[firstPosX][firstPosY] = nil
+
+	return nil
+}
 
 func (board *Board) PrintPosition(position Position) {
 	pos1, pos2 := positionToBoardIdx(position)
@@ -94,7 +128,7 @@ func (board *Board) PrintPosition(position Position) {
 	}
 }
 
-// TODO: print board
+// TODO: print board method
 
 func positionToBoardIdx(position Position) (byte, byte) {
 	// 1 -> 7
