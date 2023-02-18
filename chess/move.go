@@ -27,7 +27,6 @@ func NewMove(startX, startY, endX, endY byte, figureTaken byte, castling bool) (
 		'n',
 		'b',
 		'q',
-		'k',
 		'p',
 		0:
 	default:
