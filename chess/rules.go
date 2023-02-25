@@ -1,6 +1,13 @@
 package chess
 
 func CanMovePawn(board *Board, move Move) (bool, error) {
+	movingFigure, err := board.getFigureByPosition(move.First)
+	if err != nil {
+		return false, err
+	}
+	if movingFigure.FigureType != PawnFigureType {
+		return false, ErrInvalidFigure
+	}
 
 	firstPosX, firstPosY, err := positionToBoardIdx(move.First)
 	if err != nil {
