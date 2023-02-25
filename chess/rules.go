@@ -1,9 +1,15 @@
 package chess
 
 func CanMovePawn(board *Board, move Move) (bool, error) {
-	// TODO: add tests
-	firstPosX, firstPosY := positionToBoardIdx(move.First)
-	secondPosX, secondPosY := positionToBoardIdx(move.Second)
+
+	firstPosX, firstPosY, err := positionToBoardIdx(move.First)
+	if err != nil {
+		return false, err
+	}
+	secondPosX, secondPosY, err := positionToBoardIdx(move.Second)
+	if err != nil {
+		return false, err
+	}
 	figure := board.Positions[firstPosX][firstPosY]
 
 	if figure.Side == WhiteSide {

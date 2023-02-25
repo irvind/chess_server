@@ -63,19 +63,23 @@ func (board *Board) MoveFigure(move Move) error {
 }
 
 func (board *Board) getFigureByPosition(position Position) (*Figure, error) {
-	// TODO: check for errors
-	xCoord, yCoord := positionToBoardIdx(position)
+	xCoord, yCoord, err := positionToBoardIdx(position)
+	if err != nil {
+		return nil, err
+	}
 	return board.Positions[xCoord][yCoord], nil
 }
 
 func (board *Board) moveFigure(move Move) error {
-	firstPos1, firstPos2 := positionToBoardIdx(move.First)
+	firstPos1, firstPos2, err := positionToBoardIdx(move.First)
+	if err != nil {
+		return err
+	}
 	figure := board.Positions[firstPos1][firstPos2]
 	if figure == nil {
 		return errors.New("start position is empty")
 	}
 
-	var err error
 	switch figure.FigureType {
 	case 'p':
 		err = board.movePawn(move)
@@ -101,8 +105,11 @@ func (board *Board) moveFigure(move Move) error {
 }
 
 func (board *Board) movePawn(move Move) error {
-	firstPosX, firstPosY := positionToBoardIdx(move.First)
-	secondPosX, secondPosY := positionToBoardIdx(move.Second)
+	firstPosX, firstPosY, err := positionToBoardIdx(move.First)
+	secondPosX, secondPosY, err := positionToBoardIdx(move.Second)
+	if err != nil {
+		return err
+	}
 
 	canMove, err := CanMovePawn(board, move)
 	if err != nil {
@@ -118,22 +125,30 @@ func (board *Board) movePawn(move Move) error {
 	return nil
 }
 
-func (board *Board) PrintPosition(position Position) {
-	pos1, pos2 := positionToBoardIdx(position)
+func (board *Board) PrintPosition(position Position) error {
+	pos1, pos2, err := positionToBoardIdx(position)
+	if err != nil {
+		return err
+	}
+
 	figure := board.Positions[pos1][pos2]
 	if figure == nil {
 		fmt.Printf("%c%d: empty position\n", position.X, position.Y)
 	} else {
 		fmt.Printf("%c%d: side - %c, figure - %c\n", position.X, position.Y, figure.Side, figure.FigureType)
 	}
+
+	return nil
 }
 
 // TODO: print board method
 
-func positionToBoardIdx(position Position) (byte, byte) {
-	// 1 -> 7
-	// 8 -> 0
+func positionToBoardIdx(position Position) (byte, byte, error) {
+	if position.X < 'a' || position.X > 'h' || position.Y > 8 {
+		return 0, 0, ErrInvalidPosition
+	}
+
 	x := position.X - 'a'
 	y := 8 - position.Y
-	return y, x
+	return y, x, nil
 }
