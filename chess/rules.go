@@ -6,7 +6,7 @@ func CanMovePawn(board *Board, move Move) (bool, error) {
 	secondPosX, secondPosY := positionToBoardIdx(move.Second)
 	figure := board.Positions[firstPosX][firstPosY]
 
-	if figure.Side == 'w' {
+	if figure.Side == WhiteSide {
 		if firstPosX == secondPosX {
 			if firstPosY != (secondPosY+1) && firstPosY != (secondPosY+2) {
 				return false, nil

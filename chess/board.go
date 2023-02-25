@@ -14,27 +14,27 @@ type Board struct {
 func NewBoard() *Board {
 	board := new(Board)
 
-	board.Positions[7][0] = &Figure{'w', 'r'}
-	board.Positions[7][1] = &Figure{'w', 'n'}
-	board.Positions[7][2] = &Figure{'w', 'b'}
-	board.Positions[7][3] = &Figure{'w', 'q'}
-	board.Positions[7][4] = &Figure{'w', 'k'}
-	board.Positions[7][5] = &Figure{'w', 'b'}
-	board.Positions[7][6] = &Figure{'w', 'n'}
-	board.Positions[7][7] = &Figure{'w', 'r'}
+	board.Positions[7][0] = &Figure{WhiteSide, RookFigureType}
+	board.Positions[7][1] = &Figure{WhiteSide, KnightFigureType}
+	board.Positions[7][2] = &Figure{WhiteSide, BishopFigureType}
+	board.Positions[7][3] = &Figure{WhiteSide, QueenFigureType}
+	board.Positions[7][4] = &Figure{WhiteSide, KingFigureType}
+	board.Positions[7][5] = &Figure{WhiteSide, BishopFigureType}
+	board.Positions[7][6] = &Figure{WhiteSide, KnightFigureType}
+	board.Positions[7][7] = &Figure{WhiteSide, RookFigureType}
 
-	board.Positions[0][0] = &Figure{'b', 'r'}
-	board.Positions[0][1] = &Figure{'b', 'n'}
-	board.Positions[0][2] = &Figure{'b', 'b'}
-	board.Positions[0][3] = &Figure{'b', 'q'}
-	board.Positions[0][4] = &Figure{'b', 'k'}
-	board.Positions[0][5] = &Figure{'b', 'b'}
-	board.Positions[0][6] = &Figure{'b', 'n'}
-	board.Positions[0][7] = &Figure{'b', 'r'}
+	board.Positions[0][0] = &Figure{BlackSide, RookFigureType}
+	board.Positions[0][1] = &Figure{BlackSide, KnightFigureType}
+	board.Positions[0][2] = &Figure{BlackSide, BishopFigureType}
+	board.Positions[0][3] = &Figure{BlackSide, QueenFigureType}
+	board.Positions[0][4] = &Figure{BlackSide, KingFigureType}
+	board.Positions[0][5] = &Figure{BlackSide, BishopFigureType}
+	board.Positions[0][6] = &Figure{BlackSide, KnightFigureType}
+	board.Positions[0][7] = &Figure{BlackSide, RookFigureType}
 
 	for i := 0; i < 8; i++ {
-		board.Positions[1][i] = &Figure{'b', 'p'}
-		board.Positions[6][i] = &Figure{'w', 'p'}
+		board.Positions[1][i] = &Figure{BlackSide, PawnFigureType}
+		board.Positions[6][i] = &Figure{WhiteSide, PawnFigureType}
 	}
 
 	board.Init()
