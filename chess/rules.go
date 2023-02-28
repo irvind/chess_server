@@ -18,44 +18,66 @@ func CanMovePawn(board *Board, move Move) (bool, error) {
 		return false, err
 	}
 
-	if movingFigure.Side == WhiteSide {
-		if firstPosX == secondPosX {
-			if firstPosY != (secondPosY+1) && firstPosY != (secondPosY+2) {
-				return false, nil
-			}
+	if movingFigure.Side != WhiteSide && movingFigure.Side != BlackSide {
+		return false, ErrInvalidSide
+	}
 
-			var figure *Figure
-			if firstPosY == (secondPosY + 1) {
-				figure, err = board.getFigureByPosition(move.Second)
-			} else if firstPosY == (secondPosY + 2) {
-				newMove := move.Second
-				newMove.Y = firstPosY + 1
-				figure, err = board.getFigureByPosition(newMove)
-			}
-			if err != nil {
-				return false, err
-			}
+	isWhiteSide := movingFigure.Side == WhiteSide
+	isBlackSide := movingFigure.Side == BlackSide
 
-			if figure != nil {
-				return false, nil
-			}
-		} else if secondPosX == (firstPosX-1) || secondPosX == (firstPosX+1) {
-			if secondPosY != firstPosY-1 || move.FigureTaken == 0 {
-				return false, nil
-			}
+	if firstPosX == secondPosX {
+		validWhiteYPos := firstPosY == (secondPosY+1) || firstPosY == (secondPosY+2)
+		validBlackYPos := firstPosY == (secondPosY-1) || firstPosY == (secondPosY-2)
 
-			opponentFigure, err := board.getFigureByPosition(move.Second)
-			if err != nil {
-				return false, err
+		if isWhiteSide && !validWhiteYPos || isBlackSide && !validBlackYPos {
+			return false, nil
+		}
+
+		var figure *Figure
+		if isWhiteSide && firstPosY == (secondPosY+1) ||
+			isBlackSide && firstPosY == (secondPosY-1) {
+
+			figure, err = board.getFigureByPosition(move.Second)
+		} else if isWhiteSide && firstPosY == (secondPosY+2) ||
+			isBlackSide && firstPosY == (secondPosY-2) {
+
+			checkPos := move.First
+			if isWhiteSide {
+				checkPos.Y += 1
+			} else {
+				checkPos.Y -= 1
 			}
-			if opponentFigure.Side == 'w' || opponentFigure.FigureType != move.FigureTaken {
-				return false, nil
-			}
-		} else {
+			figure, err = board.getFigureByPosition(checkPos)
+		}
+		if err != nil {
+			return false, err
+		}
+
+		if figure != nil {
+			return false, nil
+		}
+	} else if secondPosX == (firstPosX-1) || secondPosX == (firstPosX+1) {
+		validWhiteYPos := secondPosY != firstPosY-1
+		validBlackYPos := secondPosY != firstPosY+1
+
+		if isWhiteSide && !validWhiteYPos || isBlackSide && !validBlackYPos ||
+			move.FigureTaken == 0 {
+
+			return false, nil
+		}
+
+		opponentFigure, err := board.getFigureByPosition(move.Second)
+		if err != nil {
+			return false, err
+		}
+		if isWhiteSide && opponentFigure.Side == WhiteSide ||
+			isBlackSide && opponentFigure.Side == BlackSide ||
+			opponentFigure.FigureType != move.FigureTaken {
+
 			return false, nil
 		}
 	} else {
-		// TODO: refactor
+		return false, nil
 	}
 
 	return true, nil

@@ -10,4 +10,5 @@ var (
 	ErrStartAndEndIsSame = errors.New("Start and end position cannot be the same")
 	ErrInvalidFigure     = errors.New("Invalid figure")
 	ErrInvalidMove       = errors.New("Invalid move")
+	ErrInvalidSide       = errors.New("Invalid side")
 )
