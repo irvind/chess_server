@@ -23,6 +23,22 @@ func CanMovePawn(board *Board, move Move) (bool, error) {
 			if firstPosY != (secondPosY+1) && firstPosY != (secondPosY+2) {
 				return false, nil
 			}
+
+			var figure *Figure
+			if firstPosY == (secondPosY + 1) {
+				figure, err = board.getFigureByPosition(move.Second)
+			} else if firstPosY == (secondPosY + 2) {
+				newMove := move.Second
+				newMove.Y = firstPosY + 1
+				figure, err = board.getFigureByPosition(newMove)
+			}
+			if err != nil {
+				return false, err
+			}
+
+			if figure != nil {
+				return false, nil
+			}
 		} else if secondPosX == (firstPosX-1) || secondPosX == (firstPosX+1) {
 			if secondPosY != firstPosY-1 || move.FigureTaken == 0 {
 				return false, nil
