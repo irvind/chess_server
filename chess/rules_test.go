@@ -37,10 +37,10 @@ func TestCanMovePawnInvalidMove(t *testing.T) {
 		fmt.Sscanf(firstPosStr[1:2], "%d", &firstPosY)
 		fmt.Sscanf(secondPosStr[1:2], "%d", &secondPosY)
 
-		first1, first2, _ := positionToBoardIdx(Position{X: firstPosStr[0], Y: firstPosY})
-		second1, second2, _ := positionToBoardIdx(Position{X: secondPosStr[0], Y: secondPosY})
-		board.Positions[second1][second2] = board.Positions[first1][first2]
-		board.Positions[first1][first2] = nil
+		firstX, firstY, _ := positionToBoardIdx(Position{X: firstPosStr[0], Y: firstPosY})
+		secondX, secondY, _ := positionToBoardIdx(Position{X: secondPosStr[0], Y: secondPosY})
+		board.Positions[secondY][secondX] = board.Positions[firstY][firstX]
+		board.Positions[firstY][firstX] = nil
 	}
 
 	board := NewBoard()
