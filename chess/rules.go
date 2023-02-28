@@ -17,9 +17,8 @@ func CanMovePawn(board *Board, move Move) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	figure := board.Positions[firstPosX][firstPosY]
 
-	if figure.Side == WhiteSide {
+	if movingFigure.Side == WhiteSide {
 		if firstPosX == secondPosX {
 			if firstPosY != (secondPosY+1) && firstPosY != (secondPosY+2) {
 				return false, nil
