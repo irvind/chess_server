@@ -1,6 +1,7 @@
 package chess
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -23,10 +24,12 @@ func TestNewMove(t *testing.T) {
 	}
 
 	for i, tc := range invalidPosTestCases {
-		_, err := NewMove(tc.StartX, tc.StartY, tc.EndX, tc.EndY, tc.FigureTaken, tc.Castling)
-		if err != tc.ExpectedErr {
-			t.Errorf("Test %d: Wanted '%v' err but got '%v'", i, tc.ExpectedErr, err)
-		}
+		t.Run("Case "+strconv.Itoa(i), func(t *testing.T) {
+			_, err := NewMove(tc.StartX, tc.StartY, tc.EndX, tc.EndY, tc.FigureTaken, tc.Castling)
+			if err != tc.ExpectedErr {
+				t.Errorf("Wanted '%v' err but got '%v'", tc.ExpectedErr, err)
+			}
+		})
 	}
 
 	move, err := NewMove('e', 2, 'e', 4, 0, false)
@@ -59,10 +62,12 @@ func TestMakeMoveFromStr(t *testing.T) {
 	}
 
 	for i, tc := range errTestCases {
-		_, err := MakeMoveFromStr(tc.MoveStr)
-		if err != tc.ExpectedErr {
-			t.Errorf("Test %d: Wanted '%v' err but got '%v'", i, tc.ExpectedErr, err)
-		}
+		t.Run("Case "+strconv.Itoa(i), func(t *testing.T) {
+			_, err := MakeMoveFromStr(tc.MoveStr)
+			if err != tc.ExpectedErr {
+				t.Errorf("Wanted '%v' err but got '%v'", tc.ExpectedErr, err)
+			}
+		})
 	}
 
 	move, _ := MakeMoveFromStr("e2e4c")
