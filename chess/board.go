@@ -67,7 +67,7 @@ func (board *Board) getFigureByPosition(position Position) (*Figure, error) {
 	if err != nil {
 		return nil, err
 	}
-	return board.Positions[xCoord][yCoord], nil
+	return board.Positions[yCoord][xCoord], nil
 }
 
 func (board *Board) moveFigure(move Move) error {
@@ -150,5 +150,5 @@ func positionToBoardIdx(position Position) (byte, byte, error) {
 
 	x := position.X - 'a'
 	y := 8 - position.Y
-	return y, x, nil
+	return x, y, nil
 }
