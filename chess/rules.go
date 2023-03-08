@@ -82,3 +82,8 @@ func CanMovePawn(board *Board, move Move) (bool, error) {
 
 	return true, nil
 }
+
+func CanMoveKnigth(board *Board, move Move) (bool, error) {
+	// TODO
+	return false, nil
+}

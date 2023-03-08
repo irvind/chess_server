@@ -2,7 +2,7 @@ package chess
 
 import (
 	"fmt"
-	// "strconv"
+	"strconv"
 	"testing"
 )
 
@@ -94,6 +94,79 @@ func TestCanMovePawnResult(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
 			result, err := CanMovePawn(tc.Board, *tc.Move)
+			if err != nil {
+				t.Errorf("Wanted nil err but got '%v' err", err)
+			}
+			if result != tc.Wanted {
+				t.Errorf("Wanted %v result but got %v", tc.Wanted, result)
+			}
+		})
+	}
+}
+
+func TestCanMoveKnightResult(t *testing.T) {
+	t.Run("Check all knight moves", func(t *testing.T) {
+		whiteBoard := NewBoard()
+		whiteBoard.Clear()
+		whiteBoard.AddFigureStrPos(Figure{Side: WhiteSide, FigureType: KnightFigureType}, "e4")
+
+		blackBoard := NewBoard()
+		blackBoard.Clear()
+		blackBoard.AddFigureStrPos(Figure{Side: BlackSide, FigureType: KnightFigureType}, "e4")
+
+		validMoves := map[string]bool{
+			"c5": true,
+			"d6": true,
+			"f6": true,
+			"g5": true,
+			"g3": true,
+			"f2": true,
+			"d2": true,
+			"c3": true,
+		}
+
+		for i := 'a'; i <= 'h'; i++ {
+			for j := 1; j <= 8; j++ {
+				if i == 'e' && j == 4 {
+					continue
+				}
+				secondMove := string(i) + strconv.Itoa(j)
+				wantedResult := validMoves[secondMove]
+
+				result, err := CanMoveKnigth(whiteBoard, *tMove("e4" + secondMove))
+				if err != nil {
+					t.Errorf("Wanted nil err but got '%v' err for move %v white", err, secondMove)
+				}
+				if result != wantedResult {
+					t.Errorf("Wanted %v result but got %v for move %v white", wantedResult, result, secondMove)
+				}
+
+				result, err = CanMoveKnigth(blackBoard, *tMove("e4" + secondMove))
+				if err != nil {
+					t.Errorf("Wanted nil err but got '%v' err for move %v black", err, secondMove)
+				}
+				if result != wantedResult {
+					t.Errorf("Wanted %v result but got %v for move %v black", wantedResult, result, secondMove)
+				}
+			}
+		}
+	})
+
+	// board := NewBoard()
+	testCases := []struct {
+		Board    *Board
+		Move     *Move
+		TestName string
+		Wanted   bool
+	}{
+		// {board, tMove(""), "", true},
+		// TODO: check can take figure
+		// TODO: check cannot move if position is not empty
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.TestName, func(t *testing.T) {
+			result, err := CanMoveKnigth(tc.Board, *tc.Move)
 			if err != nil {
 				t.Errorf("Wanted nil err but got '%v' err", err)
 			}

@@ -62,6 +62,30 @@ func (board *Board) MoveFigure(move Move) error {
 	return board.MoveFigureFx(move)
 }
 
+func (board *Board) Clear() {
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			board.Positions[i][j] = nil
+		}
+	}
+}
+
+func (board *Board) ClearIntPos(x int, y int) {
+	// TODO
+}
+
+func (board *Board) ClearStrPos(pos string) {
+	// TODO
+}
+
+func (board *Board) AddFigureIntPos(figure Figure, x int, y int) {
+	// TODO
+}
+
+func (board *Board) AddFigureStrPos(figure Figure, pos string) {
+	// TODO
+}
+
 func (board *Board) getFigureByPosition(position Position) (*Figure, error) {
 	xCoord, yCoord, err := positionToBoardIdx(position)
 	if err != nil {
